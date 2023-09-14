@@ -33,7 +33,7 @@ rp_id = "localhost"
 origin = "http://localhost:5000"
 rp_name = "Sample RP"
 user_id = "some_random_user_identifier_like_a_uuid"
-username = f"your.name@{rp_id}"
+username = ""
 print(f"User ID: {user_id}")
 print(f"Username: {username}")
 
@@ -65,10 +65,7 @@ current_authentication_challenge = None
 
 @app.route("/")
 def index():
-    context = {
-        "username": username,
-    }
-    return render_template("index.html", **context)
+    return render_template("index.html")
 
 
 ################
@@ -78,18 +75,23 @@ def index():
 ################
 
 
-@app.route("/generate-registration-options", methods=["GET"])
+@app.route("/generate-registration-options", methods=["POST"])
 def handler_generate_registration_options():
     global current_registration_challenge
     global logged_in_user_id
 
+    # Get the username from the request data
+    data = request.get_json()
+    username = data.get("username")
+
+    # Use the provided username to generate registration options
     user = in_memory_db[logged_in_user_id]
 
     options = generate_registration_options(
         rp_id=rp_id,
         rp_name=rp_name,
         user_id=user.id,
-        user_name=user.username,
+        user_name=username,  # Use the provided username
         exclude_credentials=[
             {"id": cred.id, "transports": cred.transports, "type": "public-key"}
             for cred in user.credentials
@@ -106,7 +108,6 @@ def handler_generate_registration_options():
     current_registration_challenge = options.challenge
 
     return options_to_json(options)
-
 
 @app.route("/verify-registration-response", methods=["POST"])
 def handler_verify_registration_response():

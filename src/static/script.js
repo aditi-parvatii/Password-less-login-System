@@ -48,9 +48,23 @@ document
   .addEventListener("click", async () => {
     resetStatus(statusRegister);
     resetDebug(dbgRegister);
-
+    const usernameInput = document.getElementById("username");
+    const username = usernameInput.value.trim()
+    if (!username) {
+      alert("Please enter a username.");
+      return; // Exit the function if no username is provided
+    }
+  
+    // Create a data object with the username
+    const data = { username };
     // Get options
-    const resp = await fetch("/generate-registration-options");
+    const resp = await fetch("/generate-registration-options", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data), // Send the username in the request body
+    });
     const opts = await resp.json();
     printToDebug(
       dbgRegister,
