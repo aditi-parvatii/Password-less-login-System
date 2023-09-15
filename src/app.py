@@ -1,6 +1,6 @@
 from typing import Dict
 import json
-
+import uuid
 from flask import Flask, render_template, request
 from webauthn import (
     generate_registration_options,
@@ -32,10 +32,9 @@ app = Flask(__name__)
 rp_id = "localhost"
 origin = "http://localhost:5000"
 rp_name = "Sample RP"
-user_id = "some_random_user_identifier_like_a_uuid"
+user_id = str(uuid.uuid4())
 username = ""
 print(f"User ID: {user_id}")
-print(f"Username: {username}")
 
 # A simple way to persist credentials by user ID
 in_memory_db: Dict[str, UserAccount] = {}
@@ -46,6 +45,7 @@ in_memory_db[user_id] = UserAccount(
     username=username,
     credentials=[],
 )
+print(in_memory_db)
 
 # Passwordless assumes you're able to identify the user before performing registration or
 # authentication
@@ -86,7 +86,7 @@ def handler_generate_registration_options():
 
     # Use the provided username to generate registration options
     user = in_memory_db[logged_in_user_id]
-
+    print(user)
     options = generate_registration_options(
         rp_id=rp_id,
         rp_name=rp_name,
@@ -137,8 +137,9 @@ def handler_verify_registration_response():
     )
 
     user.credentials.append(new_credential)
-
+    print(user)
     return {"verified": True}
+
 
 
 ################
