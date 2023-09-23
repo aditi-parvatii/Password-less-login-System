@@ -1,17 +1,15 @@
-import uuid
+#to test whether the uuid which is being sent is the same as the displayed user id in the generated options. 
 import base64
+import uuid
 
-# Your UUID as a string
-uuid_str = "6f3fa56b-19ea-4e69-aa0f-b2dc180185c3"
+# Your standard UUID
+standard_uuid = uuid.UUID("16f4519a-3975-4bca-9f04-6c09603d27c2")
 
-# Encode the UUID bytes in base64
-uuid_base64 = uuid_str.encode("utf-8")
+# Convert the UUID to a string
+uuid_str = str(standard_uuid)
 
-# The generated user_id
-generated_user_id = "NmYzZmE1NmItMTllYS00ZTY5LWFhMGYtYjJkYzE4MDE4NWMz"
+# Encode the string as a Base64 string
+base64_uuid = base64.urlsafe_b64encode(uuid_str.encode('utf-8')).decode('utf-8').rstrip('=')
 
-# Compare the UUID base64 with the generated user_id
-if uuid_base64 == generated_user_id:
-    print("The UUID and the generated user_id are the same.")
-else:
-    print("The UUID and the generated user_id are different.")
+print(f"Standard UUID: {standard_uuid}")
+print(f"Base64 UUID: {base64_uuid}")
